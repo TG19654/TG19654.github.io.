@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+</div>
+
+
+<!-- PONG -->
+<div id="pong" style="display:none">
+<h2>Pong</h2>
+<canvas id="pongCanvas" width="300" height="200" style="border:1px solid black"></canvas>
+<button onclick="startPong()">Start</button>
+</div>
+
+
+<!-- FLAPPY -->
+<div id="flappy" style="display:none">
+<h2>Flappy‑Style Game</h2>
+<canvas id="flappyCanvas" width="300" height="400" style="border:1px solid black"></canvas>
+<p>Click to jump</p>
+<button onclick="startFlappy()">Start</button>
+</div>
+
+
+<script>
+/* ---------- SNAKE ---------- */
+const sc = document.getElementById('snakeCanvas').getContext('2d');
+let snake, food, sdx, sdy;
+function startSnake(){
+snake=[[150,150]]; food=[60,60]; sdx=20; sdy=0;
+setInterval(()=>{
+const head=[snake[0][0]+sdx,snake[0][1]+sdy];
+snake.unshift(head);
+if(head[0]==food[0]&&head[1]==food[1]){
+food=[Math.floor(Math.random()*15)*20,Math.floor(Math.random()*15)*20];
+} else snake.pop();
+sc.clearRect(0,0,300,300);
+sc.fillRect(food[0],food[1],20,20);
+snake.forEach(p=>sc.fillRect(p[0],p[1],20,20));
+},150);
+}
+document.addEventListener('keydown',e=>{
+if(e.key==='ArrowUp'){sdx=0;sdy=-20}
+if(e.key==='ArrowDown'){sdx=0;sdy=20}
+if(e.key==='ArrowLeft'){sdx=-20;sdy=0}
+if(e.key==='ArrowRight'){sdx=20;sdy=0}
+});
+
+
+/* ---------- PONG ---------- */
+const pc=document.getElementById('pongCanvas').getContext('2d');
+let py=80, by=100, bx=150, vx=3, vy=3;
+function startPong(){
+setInterval(()=>{
+pc.clearRect(0,0,300,200);
+pc.fillRect(10,py,10,40);
+pc.beginPath();pc.arc(bx,by,5,0,7);pc.fill();
+bx+=vx; by+=vy;
+if(by<0||by>200)vy*=-1;
+if(bx<20&&by>py&&by<py+40)vx*=-1;
+if(bx>300) {bx=150;by=100;}
+},30);
+}
+document.addEventListener('mousemove',e=>{py=e.clientY%160});
+
+
+/* ---------- FLAPPY ---------- */
+const fc=document.getElementById('flappyCanvas').getContext('2d');
+let fy=200, fvy=0, px=300, gap=120;
+function startFlappy(){
+fy=200; fvy=0; px=300;
+setInterval(()=>{
+fc.clearRect(0,0,300,400);
+fvy+=0.5; fy+=fvy;
+px-=3; if(px<-50)px=300;
+fc.fillRect(50,fy,20,20);
+fc.fillRect(px,0,40,150);
+fc.fillRect(px,150+gap,40,400);
+},30);
+}
+document.getElementById('flappyCanvas').onclick=()=>{fvy=-8};
+</script>
+
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mini Games Hub</title>
+<style>
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#0f1220;
+  color:#ffffff;
+}
+header{
+  background:#161a2e;
+  padding:20px;
+  text-align:center;
+}
+header h1{margin:0;font-size:32px;}
+header p{opacity:0.8;}
+nav{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  padding:15px;
+  background:#1d2140;
+}
+nav button{
+  background:#2b2f6a;
+  color:white;
+  border:none;
+  padding:10px 16px;
+  border-radius:8px;
+  cursor:pointer;
+}
+nav button:hover{background:#3a3f8f;}
+main{
+  max-width:900px;
+  margin:20px auto;
+  padding:20px;
+}
+.game{
+  display:none;
+  background:#161a2e;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.4);
+}
+.game h2{margin-top:0;}
+canvas{
+  background:#000;
+  border-radius:8px;
+}
+.action-btn{
+  margin-top:10px;
+  background:#4f5dff;
+  border:none;
+  padding:10px 16px;
+  color:white;
+  border-radius:8px;
+  cursor:pointer;
+}
+.action-btn:hover{background:#6b76ff;}
+footer{
+  text-align:center;
+  padding:20px;
+  opacity:0.6;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Mini Games Hub</h1>
+  <p>Play classic mini games instantly</p>
+</header>
+
+<nav>
+  <button onclick="showGame('clicker')">Speed Clicker</button>
+  <button onclick="showGame('dodger')">Block Dodger</button>
+  <button onclick="showGame('reaction')">Reaction Test</button>
+  <button onclick="showGame('snake')">Snake</button>
+  <button onclick="showGame('pong')">Pong</button>
+  <button onclick="showGame('flappy')">Flappy</button>
+</nav>
+
+<main>
+
+<div id="clicker" class="game">
+<h2>Speed Clicker</h2>
+<p>Click as fast as you can in 10 seconds.</p>
+<p>Time: <span id="clickTime">10</span></p>
+<p>Score: <span id="clickScore">0</span></p>
+<button class="action-btn" onclick="clickButton()">CLICK</button>
+<button class="action-btn" onclick="startClicker()">Start</button>
+</div>
+
+<div id="dodger" class="game">
+<h2>Block Dodger</h2>
+<p>Use arrow keys to dodge.</p>
+<p>Score: <span id="dodgeScore">0</span></p>
+<canvas id="gameCanvas" width="300" height="400"></canvas><br>
+<button class="action-btn" onclick="startDodger()">Start</button>
+</div>
+
+<div id="reaction" class="game">
+<h2>Reaction Test</h2>
+<button id="reactionBtn" class="action-btn" onclick="reactionClick()">Wait...</button>
+<p id="reactionResult"></p>
+<button class="action-btn" onclick="startReaction()">Start</button>
+</div>
+
+<div id="snake" class="game">
+<h2>Snake</h2>
+<canvas id="snakeCanvas" width="300" height="300"></canvas><br>
+<button class="action-btn" onclick="startSnake()">Start</button>
+</div>
+
+<div id="pong" class="game">
+<h2>Pong</h2>
+<canvas id="pongCanvas" width="300" height="200"></canvas><br>
+<button class="action-btn" onclick="startPong()">Start</button>
+</div>
+
+<div id="flappy" class="game">
+<h2>Flappy Style</h2>
+<canvas id="flappyCanvas" width="300" height="400"></canvas><br>
+<button class="action-btn" onclick="startFlappy()">Start</button>
+</div>
+
+</main>
+
+<footer>
+<p>&copy; 2025 Mini Games Hub</p>
+</footer>
+
+<hr>
+<h2>More Classic Mini Games (Public‑Domain Mechanics)</h2>
+<button onclick="showGame('snake')">Snake</button>
+<button onclick="showGame('pong')">Pong</button>
+<button onclick="showGame('flappy')">Flappy‑Style</button>
+
+<!-- SNAKE -->
+<div id="snake" style="display:none">
+<h2>Snake</h2>
+<canvas id="snakeCanvas" width="300" height="300" style="border:1px solid black"></canvas>
+<button onclick="startSnake()">Start</button>
+</div>
+
+<!-- PONG -->
+<div id="pong" style="display:none">
+<h2>Pong</h2>
+<canvas id="pongCanvas" width="300" height="200" style="border:1px solid black"></canvas>
+<button onclick="startPong()">Start</button>
+</div>
+
+<!-- FLAPPY -->
+<div id="flappy" style="display:none">
+<h2>Flappy‑Style Game</h2>
+<canvas id="flappyCanvas" width="300" height="400" style="border:1px solid black"></canvas>
+<p>Click to jump</p>
+<button onclick="startFlappy()">Start</button>
+</div>
+
+<script>
+/* ---------- SNAKE ---------- */
+const sc = document.getElementById('snakeCanvas').getContext('2d');
+let snake, food, sdx, sdy;
+function startSnake(){
+  snake=[[150,150]]; food=[60,60]; sdx=20; sdy=0;
+  setInterval(()=>{
+    const head=[snake[0][0]+sdx,snake[0][1]+sdy];
+    snake.unshift(head);
+    if(head[0]==food[0]&&head[1]==food[1]){
+      food=[Math.floor(Math.random()*15)*20,Math.floor(Math.random()*15)*20];
+    } else snake.pop();
+    sc.clearRect(0,0,300,300);
+    sc.fillRect(food[0],food[1],20,20);
+    snake.forEach(p=>sc.fillRect(p[0],p[1],20,20));
+  },150);
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowUp'){sdx=0;sdy=-20}
+  if(e.key==='ArrowDown'){sdx=0;sdy=20}
+  if(e.key==='ArrowLeft'){sdx=-20;sdy=0}
+  if(e.key==='ArrowRight'){sdx=20;sdy=0}
+});
+
+/* ---------- PONG ---------- */
+const pc=document.getElementById('pongCanvas').getContext('2d');
+let py=80, by=100, bx=150, vx=3, vy=3;
+function startPong(){
+  setInterval(()=>{
+    pc.clearRect(0,0,300,200);
+    pc.fillRect(10,py,10,40);
+    pc.beginPath();pc.arc(bx,by,5,0,7);pc.fill();
+    bx+=vx; by+=vy;
+    if(by<0||by>200)vy*=-1;
+    if(bx<20&&by>py&&by<py+40)vx*=-1;
+    if(bx>300) {bx=150;by=100;}
+  },30);
+}
+document.addEventListener('mousemove',e=>{py=e.clientY%160});
+
+/* ---------- FLAPPY ---------- */
+const fc=document.getElementById('flappyCanvas').getContext('2d');
+let fy=200, fvy=0, px=300, gap=120;
+function startFlappy(){
+  fy=200; fvy=0; px=300;
+  setInterval(()=>{
+    fc.clearRect(0,0,300,400);
+    fvy+=0.5; fy+=fvy;
+    px-=3; if(px<-50)px=300;
+    fc.fillRect(50,fy,20,20);
+    fc.fillRect(px,0,40,150);
+    fc.fillRect(px,150+gap,40,400);
+  },30);
+}
+document.getElementById('flappyCanvas').onclick=()=>{fvy=-8};
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mini Games – Game Code</title>
+<style>
+body{font-family:Arial;background:#0f1220;color:#fff;margin:0;padding:20px}
+button{padding:10px 16px;border:none;border-radius:8px;cursor:pointer;margin:5px;background:#4f5dff;color:#fff}
+button:hover{background:#6b76ff}
+.game{display:none;margin-top:20px;background:#161a2e;padding:20px;border-radius:12px}
+canvas{background:#000;border-radius:8px}
+</style>
+</head>
+<body>
+
+<h1>Mini Games – Game Code</h1>
+<p>All games below are original, classic-mechanic, and safe to monetize.</p>
+
+<button onclick="show('clicker')">Speed Clicker</button>
+<button onclick="show('dodger')">Block Dodger</button>
+<button onclick="show('reaction')">Reaction Test</button>
+<button onclick="show('snake')">Snake</button>
+<button onclick="show('pong')">Pong</button>
+<button onclick="show('flappy')">Flappy‑Style</button>
+
+<!-- SPEED CLICKER -->
+<div id="clicker" class="game">
+<h2>Speed Clicker</h2>
+<p>Time: <span id="ct">10</span> | Score: <span id="cs">0</span></p>
+<button onclick="clickMe()">CLICK</button>
+<button onclick="startClicker()">Start</button>
+</div>
+
+<!-- BLOCK DODGER -->
+<div id="dodger" class="game">
+<h2>Block Dodger</h2>
+<p>Score: <span id="ds">0</span></p>
+<canvas id="dodgeCanvas" width="300" height="400"></canvas><br>
+<button onclick="startDodger()">Start</button>
+</div>
+
+<!-- REACTION TEST -->
+<div id="reaction" class="game">
+<h2>Reaction Test</h2>
+<button id="rb" onclick="reactClick()">Wait...</button>
+<p id="rr"></p>
+<button onclick="startReaction()">Start</button>
+</div>
+
+<!-- SNAKE -->
+<div id="snake" class="game">
+<h2>Snake</h2>
+<canvas id="snakeCanvas" width="300" height="300"></canvas><br>
+<button onclick="startSnake()">Start</button>
+</div>
+
+<!-- PONG -->
+<div id="pong" class="game">
+<h2>Pong</h2>
+<canvas id="pongCanvas" width="300" height="200"></canvas><br>
+<button onclick="startPong()">Start</button>
+</div>
+
+<!-- FLAPPY -->
+<div id="flappy" class="game">
+<h2>Flappy‑Style</h2>
+<canvas id="flappyCanvas" width="300" height="400"></canvas><br>
+<button onclick="startFlappy()">Start</button>
+</div>
+
+<script>
+/* ---------- NAV ---------- */
+function show(id){document.querySelectorAll('.game').forEach(g=>g.style.display='none');document.getElementById(id).style.display='block'}
+
+/* ---------- SPEED CLICKER ---------- */
+let cs=0, ct=10, ci;
+function startClicker(){cs=0;ct=10;csEl();clearInterval(ci);ci=setInterval(()=>{ct--;csEl();if(ct<=0){clearInterval(ci);alert('Score: '+cs)}},1000)}
+function clickMe(){if(ct>0){cs++;csEl()}}
+function csEl(){document.getElementById('cs').innerText=cs;document.getElementById('ct').innerText=ct}
+
+/* ---------- BLOCK DODGER ---------- */
+const dc=document.getElementById('dodgeCanvas'),dx=dc.getContext('2d');
+let px=130, by=0, bx=0, ds=0, di;
+function startDodger(){px=130;by=0;bx=Math.random()*260;ds=0;document.getElementById('ds').innerText=ds;clearInterval(di);di=setInterval(updateDodger,30)}
+function updateDodger(){dx.clearRect(0,0,300,400);dx.fillRect(px,360,40,20);dx.fillRect(bx,by,40,40);by+=5;if(by>400){by=0;bx=Math.random()*260;ds++;document.getElementById('ds').innerText=ds}if(by+40>360&&bx<px+40&&bx+40>px){clearInterval(di);alert('Game Over')}}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'&&px>0)px-=20;if(e.key==='ArrowRight'&&px<260)px+=20})
+
+/* ---------- REACTION ---------- */
+let rrdy=false, rs;
+function startReaction(){rrdy=false;const b=document.getElementById('rb');b.innerText='Wait...';b.style.background='#777';document.getElementById('rr').innerText='';setTimeout(()=>{rrdy=true;rs=Date.now();b.innerText='CLICK!';b.style.background='green'},Math.random()*3000+2000)}
+function reactClick(){if(!rrdy){document.getElementById('rr').innerText='Too early';return}document.getElementById('rr').innerText='Time: '+(Date.now()-rs)+' ms';rrdy=false}
+
+/* ---------- SNAKE ---------- */
+const sc=document.getElementById('snakeCanvas').getContext('2d');let snake,food,sdx,sdy,si;
+function startSnake(){snake=[[140,140]];food=[60,60];sdx=20;sdy=0;clearInterval(si);si=setInterval(()=>{const h=[snake[0][0]+sdx,snake[0][1]+sdy];snake.unshift(h);if(h[0]==food[0]&&h[1]==food[1])food=[Math.floor(Math.random()*15)*20,Math.floor(Math.random()*15)*20];else snake.pop();sc.clearRect(0,0,300,300);sc.fillRect(food[0],food[1],20,20);snake.forEach(p=>sc.fillRect(p[0],p[1],20,20))},150)}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowUp'){sdx=0;sdy=-20}if(e.key==='ArrowDown'){sdx=0;sdy=20}if(e.key==='ArrowLeft'){sdx=-20;sdy=0}if(e.key==='ArrowRight'){sdx=20;sdy=0}})
+
+/* ---------- PONG ---------- */
+const pc=document.getElementById('pongCanvas').getContext('2d');let py=80,bx2=150,by2=100,vx=3,vy=3,pi;
+function startPong(){clearInterval(pi);pi=setInterval(()=>{pc.clearRect(0,0,300,200);pc.fillRect(10,py,10,40);pc.beginPath();pc.arc(bx2,by2,5,0,7);pc.fill();bx2+=vx;by2+=vy;if(by2<0||by2>200)vy*=-1;if(bx2<20&&by2>py&&by2<py+40)vx*=-1;if(bx2>300){bx2=150;by2=100}},30)}
+document.addEventListener('mousemove',e=>{py=e.clientY%160})
+
+/* ---------- FLAPPY ---------- */
+const fc=document.getElementById('flappyCanvas').getContext('2d');let fy,fvy,px2,fi;
+function startFlappy(){fy=200;fvy=0;px2=300;clearInterval(fi);fi=setInterval(()=>{fc.clearRect(0,0,300,400);fvy+=0.5;fy+=fvy;px2-=3;if(px2<-50)px2=300;fc.fillRect(50,fy,20,20);fc.fillRect(px2,0,40,150);fc.fillRect(px2,270,40,130)},30)}
+document.getElementById('flappyCanvas').onclick=()=>{fvy=-8}
+</script>
+
+</body>
+</html>
+ <head><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4587376919983229"
+     crossorigin="anonymous"></script></head> 
+<html>
+
+   <head>
+
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890123456" crossorigin="anonymous"></script>
+
+      This is the head of your page.
+
+      <title></title>
+
+   </head>
+
+   <body>
+
+
+
+   </body>
+
+   </html>
